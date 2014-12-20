@@ -12,7 +12,7 @@ TriggerInput::TriggerInput(uint8_t pin)
 //
 // Reads the value of the trigger input and sets the class
 // variable 'triggered' if the input was triggered on this
-// pollilng cycle.  Uses code debouncing.
+// polling cycle.  Uses code debouncing.
 //
 
 void TriggerInput::poll()
