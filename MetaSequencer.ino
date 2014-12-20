@@ -29,7 +29,6 @@ TODO:
   - test manual stepping
   - test manual reset
   - line by line code review
-  - update factory reset
 
 Bugs
   - 
@@ -40,12 +39,6 @@ Waiting for John
 Ram links
   - http://www.fujitsu.com/downloads/MICRO/fme/fram/datasheet-fram-mb85rc64.pdf
   - library for fram: https://github.com/sosandroid/FRAM_MB85RC_I2C
-
-Notes on memory
-
-* the fram I sent John is 8,192 words, where a word is 8 bytes.  So, that's 
-  4096 16-bit values.  A pattern is 64 16-bit values.  4096 / 64 = 64.  So,
-  technically, I should have plenty of memory.
 
   
 // =========================== - 80 column - ===================================
