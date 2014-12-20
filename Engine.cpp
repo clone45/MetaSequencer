@@ -608,6 +608,7 @@ void Engine::factoryReset()
 	snapshot->setDriftAmount(0);
 	snapshot->setSlip(0);
 	snapshot->setScale(0);
+	snapshot->setHold(0);
 	snapshot->setSong(0);
 	snapshot->setSong2(0);
 	snapshot->setDisplayIntensity(15);
