@@ -56,9 +56,6 @@ void Engine::init()
 	// Initialize display driver and set displays
 	dual_display_driver->init();
 
-	// Initialize output, which loads the scale setting from non-volitile ram
-	// output->init();
-
 	// Test to see if the reset button is being held or
 	// if the initialized flag is not set to "22" in memory.
 	// If either is true, initialize the unit by setting all values to 0,
@@ -155,8 +152,7 @@ void Engine::playback()
 		// Step the internal clock variable
 		clock_counter = clock_counter + 1;
 
-		// Once the clock division has been reached,
-		// increment the step variable
+		// Once the clock division has been reached, increment the step variable
 		if(clock_counter >= snapshot->clock_division)
 		{
 			if(snapshot->slip == 0 || (rnd->random(100) > snapshot->slip)) // if no slip
@@ -290,14 +286,13 @@ void Engine::sequenceEditMode()
 	uint16_t edit_step = z_edit_step >> 1;
 
 	// Get the value from the sequencer
-	edit_value = snapshot->sequence[edit_step]; // sequencer->getValue(edit_step);
+	edit_value = snapshot->sequence[edit_step];
 
 	// Read value encoder and adjust value (bottom knob/display)
 	edit_value = (edit_value + (value_encoder->read() * value_acceleration));
 	edit_value = constrain(edit_value, 0, 4095);
 
 	// Update the sequencer with the new value
-	// sequencer->setValue(edit_step, edit_value);
 	snapshot->setValue(edit_step, edit_value);
 
 	dual_display_driver->write(TOP_DISPLAY, edit_step + 1);
@@ -327,13 +322,10 @@ void Engine::settingsMode()
 		// The variable 'z_sequence_length. is 2X the sequence length, and controls
 		// the sensitivity of the rotary encoder, which can be too sensitive at times.
 
-		// z_sequence_length = sequencer->getLength();
 		z_sequence_length = z_sequence_length + (value_encoder->read() * sequence_length_acceleration);
 		z_sequence_length = constrain(z_sequence_length, 2, MAX_SEQUENCE_LENGTH << 1);
 
 		uint16_t sequence_length = z_sequence_length >> 1;
-
-		// sequencer->setLength(sequence_length);
 
 		snapshot->setSequenceLength(sequence_length);
 
@@ -355,7 +347,6 @@ void Engine::settingsMode()
 		if(value_encoder->readButton()) clock_division_acceleration = 20;
 
 		// Set clock division
-		// clock_division = sequencer->getClockDivision();
 		z_clock_division = z_clock_division + (value_encoder->read() * clock_division_acceleration);
 		z_clock_division = constrain(z_clock_division, 2, 512 << 1);
 		
@@ -563,14 +554,12 @@ void Engine::settingsMode()
 	if(settings_page == 11)
 	{
 		int encoder_value = value_encoder->read();
-		// int8_t intensity = dual_display_driver->getIntensity();
 
 		if(encoder_value != 0)
 		{
 			z_intensity = z_intensity + encoder_value;
 			z_intensity = constrain(z_intensity, 0, 15 << 1);
 			dual_display_driver->setIntensity(z_intensity >> 1);
-			// snapshot->setDisplayIntensity(z_intensity >> 1);
 		}
 
 		dual_display_driver->writeByteCode(0, 0b00001110); // L
