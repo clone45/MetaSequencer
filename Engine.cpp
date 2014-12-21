@@ -1,3 +1,15 @@
+/*
+             _          __                                           
+  Engine.cpp
+       
+  Contains all of the sequencer logic, input handline, etc.  This is the
+  brains of the operation.  All of the non-volitile variables used by this 
+  script are stored in Snapshot.php.  It was originally programmed such that 
+  multiple 'snapshots' could be supported, but because of the very limited memory
+  in the Arduino Nano, this feature was never added.
+
+*/
+
 #include "Arduino.h"
 #include "Engine.h"
 
@@ -244,7 +256,6 @@ void Engine::sequencePlaybackMode()
 	if(reset_button->triggered)
 	{
 		step = 0;
-		// sequencer->setStep(step);
 		clock_counter = 0;
 		sequencer->resetDrift();
 		transposer->reset();
@@ -261,6 +272,8 @@ void Engine::sequencePlaybackMode()
 // Engine::sequencePlaybackMode()
 //
 // This mode lets the user to edit the sequencer values.
+// The top knob selects the step.
+// The bottom knob selects the value.
 //
 
 void Engine::sequenceEditMode()

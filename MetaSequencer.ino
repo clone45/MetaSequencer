@@ -15,6 +15,8 @@ Copyright 2014 Bret Truchan / John Staskevich
   published by the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
+  Written for the Arduino Nano
+
 Credits:
   Circuit/PCB design, parts selection, and manufacturing oversight by John Staskevich
   Front panel design by Hannes Pasqualini
@@ -47,7 +49,6 @@ Ram links
 */
 
 #include <Wire.h>
-#include <avr/pgmspace.h>
 #include "GlobalScales.h"
 #include "Engine.h"
 
