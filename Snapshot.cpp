@@ -55,6 +55,14 @@ void Snapshot::init()
   // Load hold
   this->hold = memory->read(MEM_ADDR_HOLD); 
 
+  // Load hold offset
+  this->hold_offset = memory->read(MEM_ADDR_HOLD_OFFSET); 
+
+  // Load hold threshold
+  low_byte = memory->read(MEM_ADDR_HOLD_THRESHOLD);
+  high_byte = memory->read(MEM_ADDR_HOLD_THRESHOLD + 1);
+  this->hold_threshold = word(high_byte, low_byte);
+
   // Load song1 and song2
   this->song = memory->read(MEM_ADDR_SONG);  
   this->song2 = memory->read(MEM_ADDR_SONG2);  
@@ -160,6 +168,33 @@ void Snapshot::setHold(uint8_t hold)
   {
     this->hold = hold;
     memory->write(MEM_ADDR_HOLD, hold);
+  }
+}
+
+//
+// Hold Offset
+//
+
+void Snapshot::setHoldOffset(uint16_t hold_offset)
+{
+  if(hold_offset != this->hold_offset)
+  {
+    this->hold_offset = hold_offset;
+    memory->write(MEM_ADDR_HOLD_OFFSET, hold_offset);
+  }
+}
+
+//
+// Hold Threshold
+//
+
+void Snapshot::setHoldThreshold(uint16_t hold_threshold)
+{
+  if(hold_threshold != this->hold_threshold)
+  {
+    this->hold_threshold = hold_threshold;
+    memory->write(MEM_ADDR_HOLD_THRESHOLD, lowByte(hold_threshold));
+    memory->write(MEM_ADDR_HOLD_THRESHOLD+1, highByte(hold_threshold));
   }
 }
 

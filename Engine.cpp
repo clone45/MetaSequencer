@@ -1,5 +1,5 @@
 /*
-             _          __                                           
+
   Engine.cpp
        
   Contains all of the sequencer logic, input handline, etc.  This is the
@@ -89,6 +89,8 @@ void Engine::init()
 	z_hold = snapshot->hold << 1;
 	z_song = snapshot->song << 1;
 	z_song2 = snapshot->song2 << 1;
+	z_hold_offset = snapshot->hold_offset << 1;
+	hold_threshold = snapshot->hold_threshold;  // Full sensitivity!
 
 	// Show a welcome message very briefly
 	dual_display_driver->writeByteCode(4, 0b00101111); // H
@@ -156,7 +158,7 @@ void Engine::loop()
 void Engine::playback()
 {
 	clock_input->poll();
-	reset_input->poll();
+	
 
 	// Step the sequencer using either the clock button or clock input
 	if(clock_input->triggered)
@@ -188,9 +190,14 @@ void Engine::playback()
 				}
 			}
 
-			// "hold" is the sample and hold 8-bit pattern
-			// A hold of 0 means that the sample & hold feature is turned off
-			if((!snapshot->hold) || bitRead(snapshot->hold, step % 8))
+			//
+			// This large if-statement is saying, in English:
+			//
+			// "If the sequence value at the (current step + the hold offset) is greater than the hold_cutoff,
+			//  then go ahead an play the next note.  Otherwise hold the current note."
+			//
+			
+			if(snapshot->sequence[((step + snapshot->hold_offset) % snapshot->sequence_length)] > snapshot->hold_threshold)
 			{
 				// Get the value from the sequencer
 				value = snapshot->sequence[step];
@@ -207,6 +214,8 @@ void Engine::playback()
 		}
 	}	
 
+	reset_input->poll();
+
 	if(reset_input->triggered)
 	{
 		step = 0;
@@ -216,6 +225,7 @@ void Engine::playback()
 		value = snapshot->sequence[step];
 		output->write(value);
 	}	
+
 }
 
 //
@@ -500,6 +510,7 @@ void Engine::settingsMode()
 	}
 
 	// Hold pattern
+	/*
 	if(settings_page == 8)
 	{
 		int16_t hold_acceleration = 1;
@@ -519,10 +530,51 @@ void Engine::settingsMode()
 
 		dual_display_driver->write(BOTTOM_DISPLAY, hold);
 	}
+	*/
 
+	// Hold offset
+	if(settings_page == 8)
+	{
+		int16_t acceleration = 1;
+		if(value_encoder->readButton()) acceleration = 10;
+
+		dual_display_driver->writeByteCode(0, 0b00010111); // h
+		dual_display_driver->writeByteCode(1, 0b00111101); // d
+		dual_display_driver->writeByteCode(2, 0b00001000); // -
+		dual_display_driver->writeByteCode(3, 0b00011101); // o
+
+		z_hold_offset = z_hold_offset + (value_encoder->read() * acceleration);
+		z_hold_offset = constrain(z_hold_offset, 0, 64 << 1);
+		
+		uint16_t hold_offset = z_hold_offset >> 1;
+
+		snapshot->setHoldOffset(hold_offset);
+
+		dual_display_driver->write(BOTTOM_DISPLAY, hold_offset);
+	}
+
+	// Hold threshold
+	// Notice: Encoder set to full throttle
+	if(settings_page == 9)
+	{
+		int16_t acceleration = 1;
+		if(value_encoder->readButton()) acceleration = 100;
+
+		dual_display_driver->writeByteCode(0, 0b00010111); // h
+		dual_display_driver->writeByteCode(1, 0b00111101); // d
+		dual_display_driver->writeByteCode(2, 0b00001000); // -
+		dual_display_driver->writeByteCode(3, 0b00000111); // t
+
+		hold_threshold = hold_threshold + (value_encoder->read() * acceleration);
+		hold_threshold = constrain(hold_threshold, 0, 4095);
+
+		snapshot->setHoldThreshold(hold_threshold);
+
+		dual_display_driver->write(BOTTOM_DISPLAY, hold_threshold);
+	}
 
 	// Song pattern
-	if(settings_page == 9)
+	if(settings_page == 10)
 	{
 		int encoder_value = value_encoder->read();
 
@@ -543,7 +595,7 @@ void Engine::settingsMode()
 	}
 
 	// Song2 pattern
-	if(settings_page == 10)
+	if(settings_page == 11)
 	{
 		int encoder_value = value_encoder->read();
 
@@ -564,7 +616,7 @@ void Engine::settingsMode()
 	}		
 
 	// LED Intensity
-	if(settings_page == 11)
+	if(settings_page == 12)
 	{
 		int encoder_value = value_encoder->read();
 
@@ -610,7 +662,8 @@ void Engine::factoryReset()
 	snapshot->setDriftAmount(0);
 	snapshot->setSlip(0);
 	snapshot->setScale(0);
-	snapshot->setHold(0);
+	snapshot->setHoldOffset(0);
+	snapshot->setHoldThreshold(0);
 	snapshot->setSong(0);
 	snapshot->setSong2(0);
 	snapshot->setDisplayIntensity(15);

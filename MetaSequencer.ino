@@ -29,9 +29,8 @@ Parts:
 TODO:  
   - get rid of sequencer object?
   - test manual stepping
-  - test manual reset
-  - line by line code review
-
+  - Try re-mapping reset to gate out
+  - remove old -hold- variable
 Bugs
   - 
 

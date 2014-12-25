@@ -27,6 +27,8 @@ class Snapshot
         void setSong(uint16_t song);
         void setSong2(uint16_t song);
         void setHold(uint8_t hold);
+        void setHoldOffset(uint16_t hold_offset);
+        void setHoldThreshold(uint16_t hold_threshold);
 
         // Variables
         uint16_t sequence[MAX_SEQUENCE_LENGTH]; // stores sequencer values
@@ -38,6 +40,8 @@ class Snapshot
         uint8_t drift_percentage = 0;   // Percentage changce to drift
         uint16_t drift_amount = 0;      // Amount to drift
         uint8_t hold = 0;
+        uint16_t hold_offset = 0;
+        uint16_t hold_threshold = 0;
         uint8_t display_intensity = 15; // Display brightness
         uint8_t scale = 0;              // Quantization musical scale
         uint16_t song = 0;
