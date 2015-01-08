@@ -93,7 +93,7 @@ void Engine::init()
 	hold_threshold = snapshot->hold_threshold;  // Full sensitivity!
 
 	// Show a welcome message very briefly
-	dual_display_driver->writeByteCode(4, 0b00101111); // H
+	dual_display_driver->writeByteCode(4, 0b00110111); // H
 	dual_display_driver->writeByteCode(5, 0b01001111); // E
 	dual_display_driver->writeByteCode(6, 0b00001110); // L
 	dual_display_driver->writeByteCode(7, 0b01111110); // O
@@ -418,15 +418,24 @@ void Engine::settingsMode()
 		dual_display_driver->writeByteCode(6, 0b00000001); // -
 		dual_display_driver->writeByteCode(7, 0b00000001); // -
 
-		if(value_encoder->released())
+		if(value_encoder->pressed())
 		{
+			dual_display_driver->writeByteCode(4, 0b01001110); // [
+			dual_display_driver->writeByteCode(5, 0b01001000); // =
+			dual_display_driver->writeByteCode(6, 0b01001000); // =
+			dual_display_driver->writeByteCode(7, 0b01111000); // ]
+
 			// Load sequence from non-volitile ram
 			for(uint8_t i=0; i<MAX_SEQUENCE_LENGTH; i++)
 			{
 				uint16_t value = random(4096);
 				snapshot->setValue(i, value);
-				dual_display_driver->write(BOTTOM_DISPLAY, value);
 			}
+
+			dual_display_driver->writeByteCode(4, 0b00000001); // -
+			dual_display_driver->writeByteCode(5, 0b00000001); // -
+			dual_display_driver->writeByteCode(6, 0b00000001); // -
+			dual_display_driver->writeByteCode(7, 0b00000001); // -			
 		}
 	}	
 
@@ -443,19 +452,100 @@ void Engine::settingsMode()
 		dual_display_driver->writeByteCode(6, 0b00000001); // -
 		dual_display_driver->writeByteCode(7, 0b00000001); // -
 
-		if(value_encoder->released())
+		if(value_encoder->pressed())
 		{
+			dual_display_driver->writeByteCode(4, 0b01001110); // [
+			dual_display_driver->writeByteCode(5, 0b01001000); // =
+			dual_display_driver->writeByteCode(6, 0b01001000); // =
+			dual_display_driver->writeByteCode(7, 0b01111000); // ]
+
 			// Load sequence from non-volitile ram
 			for(int i=0; i<MAX_SEQUENCE_LENGTH; i++)
 			{
 				snapshot->setValue(i, 0);
-				dual_display_driver->write(BOTTOM_DISPLAY, i);
 			}
+
+			dual_display_driver->writeByteCode(4, 0b00000001); // -
+			dual_display_driver->writeByteCode(5, 0b00000001); // -
+			dual_display_driver->writeByteCode(6, 0b00000001); // -
+			dual_display_driver->writeByteCode(7, 0b00000001); // -			
 		}
 	}		
 
-	// Slip
+	// Shift Left
 	if(settings_page == 5)
+	{
+		dual_display_driver->writeByteCode(0, 0b01011011); // S
+		dual_display_driver->writeByteCode(1, 0b00110111); // H
+		dual_display_driver->writeByteCode(2, 0b01001110); // [
+		dual_display_driver->writeByteCode(3, 0b01001110); // [
+
+		dual_display_driver->writeByteCode(4, 0b00000001); // -
+		dual_display_driver->writeByteCode(5, 0b00000001); // -
+		dual_display_driver->writeByteCode(6, 0b00000001); // -
+		dual_display_driver->writeByteCode(7, 0b00000001); // -
+
+		if(value_encoder->pressed())
+		{
+			dual_display_driver->writeByteCode(4, 0b01001110); // [
+			dual_display_driver->writeByteCode(5, 0b01001000); // =
+			dual_display_driver->writeByteCode(6, 0b01001000); // =
+			dual_display_driver->writeByteCode(7, 0b01111000); // ]
+
+			int tmp = snapshot->sequence[0];
+
+			for(int i=1; i < snapshot->sequence_length; i++)
+			{
+				snapshot->setValue(i-1, snapshot->sequence[i]);
+			}
+
+			snapshot->setValue(snapshot->sequence_length - 1, tmp);
+
+			dual_display_driver->writeByteCode(4, 0b00000001); // -
+			dual_display_driver->writeByteCode(5, 0b00000001); // -
+			dual_display_driver->writeByteCode(6, 0b00000001); // -
+			dual_display_driver->writeByteCode(7, 0b00000001); // -			
+		}
+	}
+
+	// Shift right
+	if(settings_page == 6)
+	{
+		dual_display_driver->writeByteCode(0, 0b01011011); // S
+		dual_display_driver->writeByteCode(1, 0b00110111); // H
+		dual_display_driver->writeByteCode(2, 0b01111000); // ]
+		dual_display_driver->writeByteCode(3, 0b01111000); // ]
+
+		dual_display_driver->writeByteCode(4, 0b00000001); // -
+		dual_display_driver->writeByteCode(5, 0b00000001); // -
+		dual_display_driver->writeByteCode(6, 0b00000001); // -
+		dual_display_driver->writeByteCode(7, 0b00000001); // -
+
+		if(value_encoder->pressed())
+		{
+			dual_display_driver->writeByteCode(4, 0b01001110); // [
+			dual_display_driver->writeByteCode(5, 0b01001000); // =
+			dual_display_driver->writeByteCode(6, 0b01001000); // =
+			dual_display_driver->writeByteCode(7, 0b01111000); // ]
+
+			int tmp = snapshot->sequence[snapshot->sequence_length - 1];
+
+			for(int i=snapshot->sequence_length - 1; i > 0; i--)
+			{
+				snapshot->setValue(i, snapshot->sequence[i-1]);
+			}
+
+			snapshot->setValue(0, tmp);
+
+			dual_display_driver->writeByteCode(4, 0b00000001); // -
+			dual_display_driver->writeByteCode(5, 0b00000001); // -
+			dual_display_driver->writeByteCode(6, 0b00000001); // -
+			dual_display_driver->writeByteCode(7, 0b00000001); // -			
+		}		
+	}
+
+	// Slip
+	if(settings_page == 7)
 	{
 		dual_display_driver->writeByteCode(0, 0b01011011); // S
 		dual_display_driver->writeByteCode(1, 0b00001110); // L
@@ -472,7 +562,7 @@ void Engine::settingsMode()
 
 
 	// Drift Percentage
-	if(settings_page == 6)
+	if(settings_page == 8)
 	{
 		int16_t drift_percentage_acceleration = 1;
 		if(value_encoder->readButton()) drift_percentage_acceleration = 10;
@@ -490,7 +580,7 @@ void Engine::settingsMode()
 	}	
 
 	// Drift Amount
-	if(settings_page == 7)
+	if(settings_page == 9)
 	{
 		int16_t drift_acceleration = 1;
 		if(value_encoder->readButton()) drift_acceleration = 100;
@@ -533,7 +623,7 @@ void Engine::settingsMode()
 	*/
 
 	// Hold offset
-	if(settings_page == 8)
+	if(settings_page == 10)
 	{
 		int16_t acceleration = 1;
 		if(value_encoder->readButton()) acceleration = 10;
@@ -555,7 +645,7 @@ void Engine::settingsMode()
 
 	// Hold threshold
 	// Notice: Encoder set to full throttle
-	if(settings_page == 9)
+	if(settings_page == 11)
 	{
 		int16_t acceleration = 1;
 		if(value_encoder->readButton()) acceleration = 100;
@@ -574,7 +664,7 @@ void Engine::settingsMode()
 	}
 
 	// Song pattern
-	if(settings_page == 10)
+	if(settings_page == 12)
 	{
 		int encoder_value = value_encoder->read();
 
@@ -595,7 +685,7 @@ void Engine::settingsMode()
 	}
 
 	// Song2 pattern
-	if(settings_page == 11)
+	if(settings_page == 13)
 	{
 		int encoder_value = value_encoder->read();
 
@@ -616,7 +706,7 @@ void Engine::settingsMode()
 	}		
 
 	// LED Intensity
-	if(settings_page == 12)
+	if(settings_page == 14)
 	{
 		int encoder_value = value_encoder->read();
 

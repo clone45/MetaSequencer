@@ -58,6 +58,26 @@ int8_t RotaryEncoder::readButton()
   return (! digitalRead(this->pin_a));  
 }
 
+boolean RotaryEncoder::pressed()
+{
+  if ((millis() - last_debounce_time) > debounce_delay) 
+  {
+    boolean button_value = ! digitalRead(this->pin_a);
+
+    if(old_button_value != button_value) last_debounce_time = millis();
+
+    if(old_button_value == false && button_value == true)
+    {
+
+      old_button_value = button_value;
+      return(true);
+    }
+
+    old_button_value = button_value;
+    return(false);
+  }
+}
+
 boolean RotaryEncoder::released()
 {
   boolean button_value = ! digitalRead(this->pin_a);
