@@ -24,22 +24,15 @@ Credits:
 Parts:
   DAC: MCP4725 - http://www.adafruit.com/datasheets/mcp4725.pdf
   LED Driver: AS1115 - http://www.ams.com/eng/content/download/18430/343782
-  EEPROM: 24LC256 - http://ww1.microchip.com/downloads/en/DeviceDoc/21203M.pdf
 
 TODO:  
+  - randomize sequence on factory reset
   - get rid of sequencer object?
   - test manual stepping
-  - Try re-mapping reset to gate out
   - remove old -hold- variable
+
 Bugs
   - 
-
-Waiting for John
-  - When ram is replaced, see if I can remove the delay after writes
-
-Ram links
-  - http://www.fujitsu.com/downloads/MICRO/fme/fram/datasheet-fram-mb85rc64.pdf
-  - library for fram: https://github.com/sosandroid/FRAM_MB85RC_I2C
 
   
 // =========================== - 80 column - ===================================

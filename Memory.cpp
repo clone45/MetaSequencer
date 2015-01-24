@@ -43,7 +43,4 @@ void Memory::write(uint16_t memory_address, uint8_t value)
 
   Wire.endTransmission(); 
 
-  // This delay is very important.  The memory needs some
-  // time to complete the write cycle.
-  delay(8);
 }
