@@ -93,10 +93,16 @@ void Engine::init()
 	hold_threshold = snapshot->hold_threshold;  // Full sensitivity!
 
 	// Show a welcome message very briefly
-	dual_display_driver->writeByteCode(4, 0b00110111); // H
-	dual_display_driver->writeByteCode(5, 0b01001111); // E
-	dual_display_driver->writeByteCode(6, 0b00001110); // L
-	dual_display_driver->writeByteCode(7, 0b01111110); // O
+	dual_display_driver->writeByteCode(0, 0b00110111); // H
+	dual_display_driver->writeByteCode(1, 0b01001111); // E
+	dual_display_driver->writeByteCode(2, 0b00001110); // L
+	dual_display_driver->writeByteCode(3, 0b01111110); // O
+
+	// Firmware version
+	dual_display_driver->writeDigit(4, 1);             // 1
+	dual_display_driver->writeByteCode(5, 0b00001000); // _
+	dual_display_driver->writeDigit(6, 0);             // 0
+	dual_display_driver->writeDigit(7, 0);             // 1
 
 	delay(500);
 
@@ -150,7 +156,7 @@ void Engine::loop()
 //
 // Engine::playback()
 //
-// This method is called every loop cycle.  It's in charge of  keeping the 
+// This method is called every loop cycle.  It's in charge of keeping the 
 // sequence playing.  Not to be confused with playback_mode, which is the mode 
 // where users can watch the sequence playback.
 //
@@ -158,7 +164,24 @@ void Engine::loop()
 void Engine::playback()
 {
 	clock_input->poll();
-	
+	reset_input->poll();
+
+	if(reset_input->triggered)
+	{
+		if(snapshot->rst_input_assignment == RST_ASSIGNMENT_RESET)
+		{			
+			step = 0;
+			sequencer->resetDrift();
+			transposer->reset();
+			transposer2->reset();
+			value = snapshot->sequence[step];
+			output->write(value);
+		}
+		else // if(rst_input_assignment == RST_ASSIGNMENT_SAMPLE_AND_HOLD)
+		{ 
+			sample = true;
+		}
+	}	
 
 	// Step the sequencer using either the clock button or clock input
 	if(clock_input->triggered)
@@ -197,7 +220,12 @@ void Engine::playback()
 			//  then go ahead an play the next note.  Otherwise hold the current note."
 			//
 			
-			if(snapshot->sequence[((step + snapshot->hold_offset) % snapshot->sequence_length)] > snapshot->hold_threshold)
+			if((snapshot->rst_input_assignment != RST_ASSIGNMENT_SAMPLE_AND_HOLD) && snapshot->sequence[((step + snapshot->hold_offset) % snapshot->sequence_length)] > snapshot->hold_threshold)
+			{
+				sample = true;
+			}
+
+			if(sample == true)
 			{
 				// Get the value from the sequencer
 				value = snapshot->sequence[step];
@@ -207,6 +235,8 @@ void Engine::playback()
 				total = constrain(total, 0, 4095);
 
 				output->write(total);
+
+				sample = false;
 			}
 
 			// Reset clock_counter
@@ -214,17 +244,8 @@ void Engine::playback()
 		}
 	}	
 
-	reset_input->poll();
-
-	if(reset_input->triggered)
-	{
-		step = 0;
-		sequencer->resetDrift();
-		transposer->reset();
-		transposer2->reset();
-		value = snapshot->sequence[step];
-		output->write(value);
-	}	
+	// Moved from here
+	
 
 }
 
@@ -599,29 +620,6 @@ void Engine::settingsMode()
 		dual_display_driver->write(BOTTOM_DISPLAY, drift_amount);
 	}
 
-	// Hold pattern
-	/*
-	if(settings_page == 8)
-	{
-		int16_t hold_acceleration = 1;
-		if(value_encoder->readButton()) hold_acceleration = 20;
-
-		dual_display_driver->writeByteCode(0, 0b00010111); // h
-		dual_display_driver->writeByteCode(1, 0b00011101); // o
-		dual_display_driver->writeByteCode(2, 0b00110000); // l
-		dual_display_driver->writeByteCode(3, 0b00111101); // d
-
-		z_hold = z_hold + (value_encoder->read() * hold_acceleration);
-		z_hold = constrain(z_hold, 0, 255 << 1);
-		
-		uint16_t hold = z_hold >> 1;
-
-		snapshot->setHold(hold);
-
-		dual_display_driver->write(BOTTOM_DISPLAY, hold);
-	}
-	*/
-
 	// Hold offset
 	if(settings_page == 10)
 	{
@@ -653,7 +651,7 @@ void Engine::settingsMode()
 		dual_display_driver->writeByteCode(0, 0b00010111); // h
 		dual_display_driver->writeByteCode(1, 0b00111101); // d
 		dual_display_driver->writeByteCode(2, 0b00001000); // -
-		dual_display_driver->writeByteCode(3, 0b00000111); // t
+		dual_display_driver->writeByteCode(3, 0b00001111); // t
 
 		hold_threshold = hold_threshold + (value_encoder->read() * acceleration);
 		hold_threshold = constrain(hold_threshold, 0, 4095);
@@ -725,6 +723,51 @@ void Engine::settingsMode()
 		dual_display_driver->write(BOTTOM_DISPLAY, z_intensity >> 1);
 	}	
 
+	// Reset input assignment
+
+	if(settings_page == 15)
+	{
+		// int16_t hold_acceleration = 1;
+		// if(value_encoder->readButton()) hold_acceleration = 20;
+
+		dual_display_driver->writeByteCode(0, 0b00000101); // r
+		dual_display_driver->writeByteCode(1, 0b01011011); // S
+		dual_display_driver->writeByteCode(2, 0b00001111); // t
+		dual_display_driver->writeByteCode(3, 0b00000000); // 
+
+		if(value_encoder->pressed())
+		{
+			if(snapshot->rst_input_assignment == RST_ASSIGNMENT_SAMPLE_AND_HOLD)
+			{
+				snapshot->setRstInputAssignment(RST_ASSIGNMENT_RESET);
+			}
+			else
+			{
+				snapshot->setRstInputAssignment(RST_ASSIGNMENT_SAMPLE_AND_HOLD);
+			}
+		}
+
+		if(snapshot->rst_input_assignment == RST_ASSIGNMENT_SAMPLE_AND_HOLD)
+		{
+			dual_display_driver->writeByteCode(4, 0b01011011); // S
+			dual_display_driver->writeByteCode(5, 0b00010111); // h
+			dual_display_driver->writeByteCode(6, 0b00000000); // 
+			dual_display_driver->writeByteCode(7, 0b00000000); //
+		}
+
+		if(snapshot->rst_input_assignment == RST_ASSIGNMENT_RESET)
+		{
+			dual_display_driver->writeByteCode(4, 0b00000101); // r
+			dual_display_driver->writeByteCode(5, 0b01011011); // S
+			dual_display_driver->writeByteCode(6, 0b00001111); // t
+			dual_display_driver->writeByteCode(7, 0b00000000); //
+		}
+
+		// Set in snapshot
+		
+	}
+
+
 	// Select settings page using the clock button
 	// Go back a page using the reset button
 	clock_button->poll();
@@ -757,6 +800,7 @@ void Engine::factoryReset()
 	snapshot->setSong(0);
 	snapshot->setSong2(0);
 	snapshot->setDisplayIntensity(15);
+	snapshot->setRstInputAssignment(RST_ASSIGNMENT_RESET);
 
 	for(int i=0; i<MAX_SEQUENCE_LENGTH; i++)
 	{  

@@ -65,7 +65,10 @@ void Snapshot::init()
 
   // Load song1 and song2
   this->song = memory->read(MEM_ADDR_SONG);  
-  this->song2 = memory->read(MEM_ADDR_SONG2);  
+  this->song2 = memory->read(MEM_ADDR_SONG2); 
+
+  // Load reset input assignment
+  this->rst_input_assignment = memory->read(MEM_RST_INPUT_ASSIGNMENT);
 
 }
 
@@ -248,5 +251,18 @@ void Snapshot::setSong2(uint16_t song2)
   {
     this->song2 = song2;
     memory->write(MEM_ADDR_SONG2, song2);
+  }
+}
+
+//
+// rst_input_assignment
+//
+
+void Snapshot::setRstInputAssignment(uint8_t rst_input_assignment)
+{
+  if(rst_input_assignment != this->rst_input_assignment)
+  {
+    this->rst_input_assignment = rst_input_assignment;
+    memory->write(MEM_RST_INPUT_ASSIGNMENT, rst_input_assignment);
   }
 }

@@ -29,6 +29,7 @@ class Snapshot
         void setHold(uint8_t hold);
         void setHoldOffset(uint16_t hold_offset);
         void setHoldThreshold(uint16_t hold_threshold);
+        void setRstInputAssignment(uint8_t rst_input_assignment);
 
         // Variables
         uint16_t sequence[MAX_SEQUENCE_LENGTH]; // stores sequencer values
@@ -46,6 +47,7 @@ class Snapshot
         uint8_t scale = 0;              // Quantization musical scale
         uint16_t song = 0;
         uint16_t song2 = 0;
+        uint8_t rst_input_assignment = 0;
 
     private:
 

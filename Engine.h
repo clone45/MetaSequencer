@@ -52,8 +52,11 @@ class Engine
     int8_t edit_step = 0;
     int16_t edit_value = 0;
 
+    boolean sample = false;
+
     // Always start in playback mode
     uint8_t mode = SEQUENCE_PLAYBACK_MODE;
+    uint8_t rst_input_assignment = RST_ASSIGNMENT_RESET;
     int8_t settings_page = 0;
     int8_t z_settings_page = 0;
 
