@@ -244,8 +244,6 @@ void Engine::playback()
 		}
 	}	
 
-	// Moved from here
-	
 
 }
 
@@ -446,10 +444,10 @@ void Engine::settingsMode()
 			dual_display_driver->writeByteCode(6, 0b01001000); // =
 			dual_display_driver->writeByteCode(7, 0b01111000); // ]
 
-			// Load sequence from non-volitile ram
 			for(uint8_t i=0; i<MAX_SEQUENCE_LENGTH; i++)
 			{
-				uint16_t value = random(4096);
+				// uint16_t value = random(4096);
+				uint16_t value = rnd->random(4096);
 				snapshot->setValue(i, value);
 			}
 
@@ -802,18 +800,36 @@ void Engine::factoryReset()
 	snapshot->setDisplayIntensity(15);
 	snapshot->setRstInputAssignment(RST_ASSIGNMENT_RESET);
 
-	for(int i=0; i<MAX_SEQUENCE_LENGTH; i++)
-	{  
-		snapshot->setValue(i, 0);
+	for(uint8_t i=0; i<MAX_SEQUENCE_LENGTH; i++)
+	{
+		uint16_t value = random(4096);
+		snapshot->setValue(i, value);
 	}
 
 	dual_display_driver->setIntensity(15);
 
-	// Display rS__ for 2 seconds
-	dual_display_driver->writeByteCode(4, 0b01000110); // r
-	dual_display_driver->writeByteCode(5, 0b01011011); // s
-	dual_display_driver->writeByteCode(6, 0b00001000); // _
-	dual_display_driver->writeByteCode(7, 0b00001000); // _
+	// Animate reset message
+	dual_display_driver->writeByteCode(0, 0b00000000); // 
+	dual_display_driver->writeByteCode(1, 0b00000000); // 
+	dual_display_driver->writeByteCode(2, 0b00000000); // 
+	dual_display_driver->writeByteCode(3, 0b00000000); //
+	dual_display_driver->writeByteCode(4, 0b00000000); // 
+	dual_display_driver->writeByteCode(5, 0b00000000); // 
+	dual_display_driver->writeByteCode(6, 0b00000000); // 
+	dual_display_driver->writeByteCode(7, 0b00000000); // 
 
-	delay(2000);
+	delay(400);
+	dual_display_driver->writeByteCode(4, 0b01000110); // r
+	delay(400);
+	dual_display_driver->writeByteCode(5, 0b01011011); // S
+	delay(400);
+	dual_display_driver->writeByteCode(6, 0b01001111); // E	
+	delay(400);
+	dual_display_driver->writeByteCode(7, 0b00001111); // t
+	delay(400);
+
+	dual_display_driver->writeByteCode(4, 0b00000000); // 
+	dual_display_driver->writeByteCode(5, 0b00000000); // 
+	dual_display_driver->writeByteCode(6, 0b00000000); // 
+	dual_display_driver->writeByteCode(7, 0b00000000); // 
 }
