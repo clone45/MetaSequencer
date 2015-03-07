@@ -33,7 +33,10 @@ class Engine
     // Global variables of the sequencer
     uint8_t step = 0;
     int16_t value = 0;
+    int32_t output_value = 0;    
     uint16_t old_value = 0;
+
+    int16_t realtime_recording_value = 0;
 
     int16_t z_sequence_length = 0;
     int16_t z_clock_division = 0;

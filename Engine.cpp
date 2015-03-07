@@ -293,6 +293,24 @@ void Engine::sequencePlaybackMode()
 		output->write(value);
 	}
 
+	// Handle realtime recording
+	if(value_encoder->readButton())
+	{
+		// Just been pressed?
+		if(value_encoder->pressed())
+		{
+			realtime_recording_value = 0;
+		}
+
+		realtime_recording_value = (realtime_recording_value + (value_encoder->read() * 100));
+		realtime_recording_value = constrain(realtime_recording_value, 0, 4095);
+
+		value = realtime_recording_value;
+
+		// Update the sequencer with the new value
+		snapshot->setValue(step, realtime_recording_value);
+	}
+
 	dual_display_driver->write(TOP_DISPLAY, step + 1);
 	dual_display_driver->write(BOTTOM_DISPLAY, value);
 }
