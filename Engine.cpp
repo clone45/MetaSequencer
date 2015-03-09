@@ -234,7 +234,14 @@ void Engine::playback()
 				int32_t total = value + drift;
 				total = constrain(total, 0, 4095);
 
-				if(!value_encoder->readButton()) output->write(total);
+				if((mode == SEQUENCE_PLAYBACK_MODE) && value_encoder->readButton())
+				{
+					// do not play output while realtime recording in playback mode
+				}
+				else
+				{
+					output->write(total);
+				}
 				
 				sample = false;
 			}
