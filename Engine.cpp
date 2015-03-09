@@ -234,8 +234,8 @@ void Engine::playback()
 				int32_t total = value + drift;
 				total = constrain(total, 0, 4095);
 
-				output->write(total);
-
+				if(!value_encoder->readButton()) output->write(total);
+				
 				sample = false;
 			}
 
@@ -309,6 +309,8 @@ void Engine::sequencePlaybackMode()
 
 		// Update the sequencer with the new value
 		snapshot->setValue(step, realtime_recording_value);
+
+		output->write(realtime_recording_value);
 	}
 
 	dual_display_driver->write(TOP_DISPLAY, step + 1);
