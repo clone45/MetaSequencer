@@ -35,6 +35,7 @@ class Engine
     int16_t value = 0;
     int32_t output_value = 0;    
     uint16_t old_value = 0;
+    int8_t value_encoder_button_pressed = 0;
 
     int16_t realtime_recording_value = 0;
 

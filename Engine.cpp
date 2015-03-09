@@ -114,6 +114,9 @@ void Engine::loop()
 {
 	mode_switch->poll();
 
+	// Reading the value encoder is done once, here, for efficiency.
+	value_encoder_button_pressed = value_encoder->readButton();
+
 	switch(mode_switch->position)
 	{
 		case 1:
@@ -231,16 +234,16 @@ void Engine::playback()
 				value = snapshot->sequence[step];
 				drift = sequencer->drift[step];
 
-				int32_t total = value + drift;
-				total = constrain(total, 0, 4095);
+				// int32_t total = value + drift;
+				// total = constrain(total, 0, 4095);
 
-				if((mode == SEQUENCE_PLAYBACK_MODE) && value_encoder->readButton())
+				if((mode == SEQUENCE_PLAYBACK_MODE) && value_encoder_button_pressed)
 				{
 					// do not play output while realtime recording in playback mode
 				}
 				else
 				{
-					output->write(total);
+					output->write(constrain(value + drift, 0, 4095));
 				}
 				
 				sample = false;
@@ -301,7 +304,7 @@ void Engine::sequencePlaybackMode()
 	}
 
 	// Handle realtime recording
-	if(value_encoder->readButton())
+	if(value_encoder_button_pressed)
 	{
 		// Just been pressed?
 		if(value_encoder->pressed())
@@ -342,7 +345,7 @@ void Engine::sequenceEditMode()
 	int16_t value_acceleration = 1;
 
 	if(step_encoder->readButton() && (snapshot->sequence_length > 16)) step_acceleration = 10;
-	if(value_encoder->readButton()) value_acceleration = 100;
+	if(value_encoder_button_pressed) value_acceleration = 100;
 
 	z_edit_step = (z_edit_step + (step_encoder->read() * step_acceleration));
 
@@ -384,7 +387,7 @@ void Engine::settingsMode()
 		int sequence_length_acceleration = 1;
 
 		// Rotary encoder buttons are used for input accelleration
-		if(value_encoder->readButton()) sequence_length_acceleration = 20;
+		if(value_encoder_button_pressed) sequence_length_acceleration = 20;
 
 		// Set sequence length
 		//
@@ -413,7 +416,7 @@ void Engine::settingsMode()
 		int clock_division_acceleration = 1;
 
 		// Rotary encoder buttons are used for input accelleration
-		if(value_encoder->readButton()) clock_division_acceleration = 20;
+		if(value_encoder_button_pressed) clock_division_acceleration = 20;
 
 		// Set clock division
 		z_clock_division = z_clock_division + (value_encoder->read() * clock_division_acceleration);
@@ -611,7 +614,7 @@ void Engine::settingsMode()
 	if(settings_page == 8)
 	{
 		int16_t drift_percentage_acceleration = 1;
-		if(value_encoder->readButton()) drift_percentage_acceleration = 10;
+		if(value_encoder_button_pressed) drift_percentage_acceleration = 10;
 
 		dual_display_driver->writeByteCode(0, 0b00111101); // d
 		dual_display_driver->writeByteCode(1, 0b00000101); // r
@@ -629,7 +632,7 @@ void Engine::settingsMode()
 	if(settings_page == 9)
 	{
 		int16_t drift_acceleration = 1;
-		if(value_encoder->readButton()) drift_acceleration = 100;
+		if(value_encoder_button_pressed) drift_acceleration = 100;
 
 		dual_display_driver->writeByteCode(0, 0b00111101); // d
 		dual_display_driver->writeByteCode(1, 0b00000101); // r
@@ -649,7 +652,7 @@ void Engine::settingsMode()
 	if(settings_page == 10)
 	{
 		int16_t acceleration = 1;
-		if(value_encoder->readButton()) acceleration = 10;
+		if(value_encoder_button_pressed) acceleration = 10;
 
 		dual_display_driver->writeByteCode(0, 0b00010111); // h
 		dual_display_driver->writeByteCode(1, 0b00111101); // d
@@ -671,7 +674,7 @@ void Engine::settingsMode()
 	if(settings_page == 11)
 	{
 		int16_t acceleration = 1;
-		if(value_encoder->readButton()) acceleration = 100;
+		if(value_encoder_button_pressed) acceleration = 100;
 
 		dual_display_driver->writeByteCode(0, 0b00010111); // h
 		dual_display_driver->writeByteCode(1, 0b00111101); // d
