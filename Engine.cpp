@@ -93,14 +93,14 @@ void Engine::init()
 	hold_threshold = snapshot->hold_threshold;  // Full sensitivity!
 
 	// Show a welcome message very briefly
-	dual_display_driver->writeByteCode(0, 0b00110111); // H
-	dual_display_driver->writeByteCode(1, 0b01001111); // E
-	dual_display_driver->writeByteCode(2, 0b00001110); // L
-	dual_display_driver->writeByteCode(3, 0b01111110); // O
+	dual_display_driver->writeByteCode(0, __H__); // H
+	dual_display_driver->writeByteCode(1, __E__); // E
+	dual_display_driver->writeByteCode(2, __L__); // L
+	dual_display_driver->writeByteCode(3, __O__); // O
 
 	// Firmware version
 	dual_display_driver->writeDigit(4, 1);             // 1
-	dual_display_driver->writeByteCode(5, 0b00001000); // _
+	dual_display_driver->writeByteCode(5, __underscore__); // _
 	dual_display_driver->writeDigit(6, 0);             // 0
 	dual_display_driver->writeDigit(7, 0);             // 1
 
@@ -402,10 +402,10 @@ void Engine::settingsMode()
 		snapshot->setSequenceLength(sequence_length);
 
 		// Update displays
-		dual_display_driver->writeByteCode(0, 0b00001110); // L
-		dual_display_driver->writeByteCode(1, 0b01001111); // E
-		dual_display_driver->writeByteCode(2, 0b00010101); // n
-		dual_display_driver->writeByteCode(3, 0b01111011); // g
+		dual_display_driver->writeByteCode(0, __L__); // L
+		dual_display_driver->writeByteCode(1, __E__); // E
+		dual_display_driver->writeByteCode(2, __n__); // n
+		dual_display_driver->writeByteCode(3, __g__); // g
 
 		dual_display_driver->write(BOTTOM_DISPLAY, sequence_length);
 	}
@@ -427,10 +427,10 @@ void Engine::settingsMode()
 		snapshot->setClockDivision(clock_division);
 
 		// Update displays
-		dual_display_driver->writeByteCode(0, 0b00001101); // c
-		dual_display_driver->writeByteCode(1, 0b00111101); // d
-		dual_display_driver->writeByteCode(2, 0b00010000); // i
-		dual_display_driver->writeByteCode(3, 0b00011100); // v
+		dual_display_driver->writeByteCode(0, __C__); // c
+		dual_display_driver->writeByteCode(1, __d__); // d
+		dual_display_driver->writeByteCode(2, __i__); // i
+		dual_display_driver->writeByteCode(3, __v__); // v
 
 		dual_display_driver->write(BOTTOM_DISPLAY, clock_division);
 	}
@@ -446,26 +446,119 @@ void Engine::settingsMode()
 
 		snapshot->setScale(scale);
 
-		dual_display_driver->writeByteCode(0, 0b01011011); // S
-		dual_display_driver->writeByteCode(1, 0b01001110); // C
-		dual_display_driver->writeByteCode(2, 0b01110111); // A
-		dual_display_driver->writeByteCode(3, 0b00001110); // L
+		dual_display_driver->writeByteCode(0, __S__); // S
+		dual_display_driver->writeByteCode(1, __C__); // C
+		dual_display_driver->writeByteCode(2, __A__); // A
+		dual_display_driver->writeByteCode(3, __L__); // L
 
-		dual_display_driver->write(BOTTOM_DISPLAY, scale);
+		switch(scale) {
+			case 0: // None
+				dual_display_driver->writeByteCode(4, __n__);
+				dual_display_driver->writeByteCode(5, __o__);
+				dual_display_driver->writeByteCode(6, __n__);
+				dual_display_driver->writeByteCode(7, __E__);
+				break;
+			case 1: // MAJOR
+				dual_display_driver->writeByteCode(4, __M__);
+				dual_display_driver->writeByteCode(5, __A__);
+				dual_display_driver->writeByteCode(6, __j__);
+				dual_display_driver->writeByteCode(7, __o__);
+				break;
+			case 2: // MINOR
+				dual_display_driver->writeByteCode(4, __M__);
+				dual_display_driver->writeByteCode(5, __i__);
+				dual_display_driver->writeByteCode(6, __n__);
+				dual_display_driver->writeByteCode(7, __o__);
+				break;
+			case 3: // IONIAN
+				dual_display_driver->writeByteCode(4, __i__);
+				dual_display_driver->writeByteCode(5, __o__);
+				dual_display_driver->writeByteCode(6, __n__);
+				dual_display_driver->writeByteCode(7, __i__);
+				break;					
+			case 4: // DORIAN
+				dual_display_driver->writeByteCode(4, __d__);
+				dual_display_driver->writeByteCode(5, __o__);
+				dual_display_driver->writeByteCode(6, __r__);
+				dual_display_driver->writeByteCode(7, __i__);
+				break;	
+			case 5: // LYDIAN
+				dual_display_driver->writeByteCode(4, __L__);
+				dual_display_driver->writeByteCode(5, __Y__);
+				dual_display_driver->writeByteCode(6, __d__);
+				dual_display_driver->writeByteCode(7, __I__);
+				break;
+			case 6: // PHRYGIAN
+				dual_display_driver->writeByteCode(4, __P__);
+				dual_display_driver->writeByteCode(5, __H__);
+				dual_display_driver->writeByteCode(6, __r__);
+				dual_display_driver->writeByteCode(7, __Y__);
+				break;	
+			case 7: // MIXOLYDIAN
+				dual_display_driver->writeByteCode(4, __M__);
+				dual_display_driver->writeByteCode(5, __o__);
+				dual_display_driver->writeByteCode(6, __L__);
+				dual_display_driver->writeByteCode(7, __Y__);
+				break;	
+			case 8: // AEOLIAN
+				dual_display_driver->writeByteCode(4, __A__);
+				dual_display_driver->writeByteCode(5, __E__);
+				dual_display_driver->writeByteCode(6, __O__);
+				dual_display_driver->writeByteCode(7, __L__);
+				break;
+			case 9: // LOCRIAN
+				dual_display_driver->writeByteCode(4, __L__);
+				dual_display_driver->writeByteCode(5, __o__);
+				dual_display_driver->writeByteCode(6, __c__);
+				dual_display_driver->writeByteCode(7, __r__);
+				break;	
+			case 10: // MAJOR_PENTATONIC
+				dual_display_driver->writeByteCode(4, __M__);
+				dual_display_driver->writeByteCode(5, __a__);
+				dual_display_driver->writeByteCode(6, __j__);
+				dual_display_driver->writeByteCode(7, __P__);
+				break;
+			case 11: // MINOR_PENTATONIC
+				dual_display_driver->writeByteCode(4, __M__);
+				dual_display_driver->writeByteCode(5, __i__);
+				dual_display_driver->writeByteCode(6, __n__);
+				dual_display_driver->writeByteCode(7, __P__);
+				break;	
+			case 12: // DIMINISHED
+				dual_display_driver->writeByteCode(4, __d__);
+				dual_display_driver->writeByteCode(5, __i__);
+				dual_display_driver->writeByteCode(6, __m__);
+				dual_display_driver->writeByteCode(7, __i__);
+				break;
+			case 13: // CHROMATIC
+				dual_display_driver->writeByteCode(4, __c__);
+				dual_display_driver->writeByteCode(5, __h__);
+				dual_display_driver->writeByteCode(6, __r__);
+				dual_display_driver->writeByteCode(7, __o__);
+				break;	
+			case 14: // GATE
+				dual_display_driver->writeByteCode(4, __g__);
+				dual_display_driver->writeByteCode(5, __A__);
+				dual_display_driver->writeByteCode(6, __t__);
+				dual_display_driver->writeByteCode(7, __E__);
+				break;
+		}
+
+		// dual_display_driver->write(BOTTOM_DISPLAY, scale);
 	}
 
 	// Randomize
 	if(settings_page == 3)
 	{
-		dual_display_driver->writeByteCode(0, 0b00000101); // r
-		dual_display_driver->writeByteCode(1, 0b01110111); // A
-		dual_display_driver->writeByteCode(2, 0b00010101); // n
-		dual_display_driver->writeByteCode(3, 0b00111101); // d
+		dual_display_driver->writeByteCode(0, __r__); // r
+		dual_display_driver->writeByteCode(1, __A__); // A
+		dual_display_driver->writeByteCode(2, __n__); // n
+		dual_display_driver->writeByteCode(3, __d__); // d
 
-		dual_display_driver->writeByteCode(4, 0b00000001); // -
-		dual_display_driver->writeByteCode(5, 0b00000001); // -
-		dual_display_driver->writeByteCode(6, 0b00000001); // -
-		dual_display_driver->writeByteCode(7, 0b00000001); // -
+		dual_display_driver->writeByteCode(4, __dash__); // -
+		dual_display_driver->writeByteCode(5, __dash__); // -
+		dual_display_driver->writeByteCode(6, __dash__); // -
+		dual_display_driver->writeByteCode(7, __dash__); // -
 
 		if(value_encoder->pressed())
 		{
@@ -481,25 +574,25 @@ void Engine::settingsMode()
 				snapshot->setValue(i, value);
 			}
 
-			dual_display_driver->writeByteCode(4, 0b00000001); // -
-			dual_display_driver->writeByteCode(5, 0b00000001); // -
-			dual_display_driver->writeByteCode(6, 0b00000001); // -
-			dual_display_driver->writeByteCode(7, 0b00000001); // -			
+			dual_display_driver->writeByteCode(4, __dash__); // -
+			dual_display_driver->writeByteCode(5, __dash__); // -
+			dual_display_driver->writeByteCode(6, __dash__); // -
+			dual_display_driver->writeByteCode(7, __dash__); // -			
 		}
 	}	
 
 	// Clear
 	if(settings_page == 4)
 	{
-		dual_display_driver->writeByteCode(0, 0b01001110); // C
-		dual_display_driver->writeByteCode(1, 0b00001110); // L
-		dual_display_driver->writeByteCode(2, 0b01001111); // E
-		dual_display_driver->writeByteCode(3, 0b00000101); // r
+		dual_display_driver->writeByteCode(0, __C__); // C
+		dual_display_driver->writeByteCode(1, __L__); // L
+		dual_display_driver->writeByteCode(2, __E__); // E
+		dual_display_driver->writeByteCode(3, __r__); // r
 
-		dual_display_driver->writeByteCode(4, 0b00000001); // -
-		dual_display_driver->writeByteCode(5, 0b00000001); // -
-		dual_display_driver->writeByteCode(6, 0b00000001); // -
-		dual_display_driver->writeByteCode(7, 0b00000001); // -
+		dual_display_driver->writeByteCode(4, __dash__); // -
+		dual_display_driver->writeByteCode(5, __dash__); // -
+		dual_display_driver->writeByteCode(6, __dash__); // -
+		dual_display_driver->writeByteCode(7, __dash__); // -
 
 		if(value_encoder->pressed())
 		{
@@ -514,25 +607,25 @@ void Engine::settingsMode()
 				snapshot->setValue(i, 0);
 			}
 
-			dual_display_driver->writeByteCode(4, 0b00000001); // -
-			dual_display_driver->writeByteCode(5, 0b00000001); // -
-			dual_display_driver->writeByteCode(6, 0b00000001); // -
-			dual_display_driver->writeByteCode(7, 0b00000001); // -			
+			dual_display_driver->writeByteCode(4, __dash__); // -
+			dual_display_driver->writeByteCode(5, __dash__); // -
+			dual_display_driver->writeByteCode(6, __dash__); // -
+			dual_display_driver->writeByteCode(7, __dash__); // -			
 		}
 	}		
 
 	// Shift Left
 	if(settings_page == 5)
 	{
-		dual_display_driver->writeByteCode(0, 0b01011011); // S
-		dual_display_driver->writeByteCode(1, 0b00110111); // H
+		dual_display_driver->writeByteCode(0, __S__); // S
+		dual_display_driver->writeByteCode(1, __H__); // H
 		dual_display_driver->writeByteCode(2, 0b01001110); // [
 		dual_display_driver->writeByteCode(3, 0b01001110); // [
 
-		dual_display_driver->writeByteCode(4, 0b00000001); // -
-		dual_display_driver->writeByteCode(5, 0b00000001); // -
-		dual_display_driver->writeByteCode(6, 0b00000001); // -
-		dual_display_driver->writeByteCode(7, 0b00000001); // -
+		dual_display_driver->writeByteCode(4, __dash__); // -
+		dual_display_driver->writeByteCode(5, __dash__); // -
+		dual_display_driver->writeByteCode(6, __dash__); // -
+		dual_display_driver->writeByteCode(7, __dash__); // -
 
 		if(value_encoder->pressed())
 		{
@@ -550,25 +643,25 @@ void Engine::settingsMode()
 
 			snapshot->setValue(snapshot->sequence_length - 1, tmp);
 
-			dual_display_driver->writeByteCode(4, 0b00000001); // -
-			dual_display_driver->writeByteCode(5, 0b00000001); // -
-			dual_display_driver->writeByteCode(6, 0b00000001); // -
-			dual_display_driver->writeByteCode(7, 0b00000001); // -			
+			dual_display_driver->writeByteCode(4, __dash__); // -
+			dual_display_driver->writeByteCode(5, __dash__); // -
+			dual_display_driver->writeByteCode(6, __dash__); // -
+			dual_display_driver->writeByteCode(7, __dash__); // -			
 		}
 	}
 
 	// Shift right
 	if(settings_page == 6)
 	{
-		dual_display_driver->writeByteCode(0, 0b01011011); // S
-		dual_display_driver->writeByteCode(1, 0b00110111); // H
+		dual_display_driver->writeByteCode(0, __S__); // S
+		dual_display_driver->writeByteCode(1, __H__); // H
 		dual_display_driver->writeByteCode(2, 0b01111000); // ]
 		dual_display_driver->writeByteCode(3, 0b01111000); // ]
 
-		dual_display_driver->writeByteCode(4, 0b00000001); // -
-		dual_display_driver->writeByteCode(5, 0b00000001); // -
-		dual_display_driver->writeByteCode(6, 0b00000001); // -
-		dual_display_driver->writeByteCode(7, 0b00000001); // -
+		dual_display_driver->writeByteCode(4, __dash__); // -
+		dual_display_driver->writeByteCode(5, __dash__); // -
+		dual_display_driver->writeByteCode(6, __dash__); // -
+		dual_display_driver->writeByteCode(7, __dash__); // -
 
 		if(value_encoder->pressed())
 		{
@@ -586,20 +679,20 @@ void Engine::settingsMode()
 
 			snapshot->setValue(0, tmp);
 
-			dual_display_driver->writeByteCode(4, 0b00000001); // -
-			dual_display_driver->writeByteCode(5, 0b00000001); // -
-			dual_display_driver->writeByteCode(6, 0b00000001); // -
-			dual_display_driver->writeByteCode(7, 0b00000001); // -			
+			dual_display_driver->writeByteCode(4, __dash__); // -
+			dual_display_driver->writeByteCode(5, __dash__); // -
+			dual_display_driver->writeByteCode(6, __dash__); // -
+			dual_display_driver->writeByteCode(7, __dash__); // -			
 		}		
 	}
 
 	// Slip
 	if(settings_page == 7)
 	{
-		dual_display_driver->writeByteCode(0, 0b01011011); // S
-		dual_display_driver->writeByteCode(1, 0b00001110); // L
-		dual_display_driver->writeByteCode(2, 0b00010000); // i
-		dual_display_driver->writeByteCode(3, 0b01100111); // P
+		dual_display_driver->writeByteCode(0, __S__); // S
+		dual_display_driver->writeByteCode(1, __L__); // L
+		dual_display_driver->writeByteCode(2, __i__); // i
+		dual_display_driver->writeByteCode(3, __P__); // P
 
 		// Set slip
 		int8_t slip = snapshot->slip + (value_encoder->read());
@@ -616,10 +709,10 @@ void Engine::settingsMode()
 		int16_t drift_percentage_acceleration = 1;
 		if(value_encoder_button_pressed) drift_percentage_acceleration = 10;
 
-		dual_display_driver->writeByteCode(0, 0b00111101); // d
-		dual_display_driver->writeByteCode(1, 0b00000101); // r
-		dual_display_driver->writeByteCode(2, 0b00000001); // -
-		dual_display_driver->writeByteCode(3, 0b01100111); // P
+		dual_display_driver->writeByteCode(0, __d__);    // d
+		dual_display_driver->writeByteCode(1, __r__);    // r
+		dual_display_driver->writeByteCode(2, __dash__); // -
+		dual_display_driver->writeByteCode(3, __P__);    // P
 
 		int8_t drift_percentage = snapshot->drift_percentage + (value_encoder->read() * drift_percentage_acceleration);
 		drift_percentage = constrain(drift_percentage, 0, 100);
@@ -634,10 +727,10 @@ void Engine::settingsMode()
 		int16_t drift_acceleration = 1;
 		if(value_encoder_button_pressed) drift_acceleration = 100;
 
-		dual_display_driver->writeByteCode(0, 0b00111101); // d
-		dual_display_driver->writeByteCode(1, 0b00000101); // r
-		dual_display_driver->writeByteCode(2, 0b00001000); // _
-		dual_display_driver->writeByteCode(3, 0b01110111); // A
+		dual_display_driver->writeByteCode(0, __d__);          // d
+		dual_display_driver->writeByteCode(1, __r__);          // r
+		dual_display_driver->writeByteCode(2, __underscore__); // _
+		dual_display_driver->writeByteCode(3, __A__);          // A
 
 		int16_t drift_amount = snapshot->drift_amount;
 		drift_amount = drift_amount + (value_encoder->read() * drift_acceleration);
@@ -654,10 +747,10 @@ void Engine::settingsMode()
 		int16_t acceleration = 1;
 		if(value_encoder_button_pressed) acceleration = 10;
 
-		dual_display_driver->writeByteCode(0, 0b00010111); // h
-		dual_display_driver->writeByteCode(1, 0b00111101); // d
-		dual_display_driver->writeByteCode(2, 0b00001000); // -
-		dual_display_driver->writeByteCode(3, 0b00011101); // o
+		dual_display_driver->writeByteCode(0, __h__);    // h
+		dual_display_driver->writeByteCode(1, __d__);    // d
+		dual_display_driver->writeByteCode(2, __dash__); // -
+		dual_display_driver->writeByteCode(3, __o__);    // o
 
 		z_hold_offset = z_hold_offset + (value_encoder->read() * acceleration);
 		z_hold_offset = constrain(z_hold_offset, 0, 64 << 1);
@@ -676,10 +769,10 @@ void Engine::settingsMode()
 		int16_t acceleration = 1;
 		if(value_encoder_button_pressed) acceleration = 100;
 
-		dual_display_driver->writeByteCode(0, 0b00010111); // h
-		dual_display_driver->writeByteCode(1, 0b00111101); // d
-		dual_display_driver->writeByteCode(2, 0b00001000); // -
-		dual_display_driver->writeByteCode(3, 0b00001111); // t
+		dual_display_driver->writeByteCode(0, __h__);     // h
+		dual_display_driver->writeByteCode(1, __d__);     // d
+		dual_display_driver->writeByteCode(2, __dash__);  // -
+		dual_display_driver->writeByteCode(3, __t__);     // t
 
 		hold_threshold = hold_threshold + (value_encoder->read() * acceleration);
 		hold_threshold = constrain(hold_threshold, 0, 4095);
@@ -702,10 +795,10 @@ void Engine::settingsMode()
 			snapshot->setSong(z_song >> 1);
 		}
 
-		dual_display_driver->writeByteCode(0, 0b01011011); // S
-		dual_display_driver->writeByteCode(1, 0b00011101); // o
-		dual_display_driver->writeByteCode(2, 0b00010101); // n
-		dual_display_driver->writeDigit(3, 1);             // 1
+		dual_display_driver->writeByteCode(0, __S__); // S
+		dual_display_driver->writeByteCode(1, __o__); // o
+		dual_display_driver->writeByteCode(2, __n__); // n
+		dual_display_driver->writeDigit(3, 1);        // 1
 
 		dual_display_driver->write(BOTTOM_DISPLAY, z_song >> 1);
 	}
@@ -723,10 +816,10 @@ void Engine::settingsMode()
 			snapshot->setSong2(z_song2 >> 1);
 		}
 
-		dual_display_driver->writeByteCode(0, 0b01011011); // S
-		dual_display_driver->writeByteCode(1, 0b00011101); // o
-		dual_display_driver->writeByteCode(2, 0b00010101); // n
-		dual_display_driver->writeDigit(3, 2);             // 2
+		dual_display_driver->writeByteCode(0, __S__); // S
+		dual_display_driver->writeByteCode(1, __o__); // o
+		dual_display_driver->writeByteCode(2, __n__); // n
+		dual_display_driver->writeDigit(3, 2);        // 2
 
 		dual_display_driver->write(BOTTOM_DISPLAY, z_song2 >> 1);
 	}		
@@ -743,10 +836,10 @@ void Engine::settingsMode()
 			dual_display_driver->setIntensity(z_intensity >> 1);
 		}
 
-		dual_display_driver->writeByteCode(0, 0b00001110); // L
-		dual_display_driver->writeByteCode(1, 0b01001111); // E
-		dual_display_driver->writeByteCode(2, 0b00111101); // d
-		dual_display_driver->writeByteCode(3, 0b01011011); // S
+		dual_display_driver->writeByteCode(0, __L__); // L
+		dual_display_driver->writeByteCode(1, __E__); // E
+		dual_display_driver->writeByteCode(2, __d__); // d
+		dual_display_driver->writeByteCode(3, __S__); // S
 
 		dual_display_driver->write(BOTTOM_DISPLAY, z_intensity >> 1);
 	}	
@@ -758,9 +851,9 @@ void Engine::settingsMode()
 		// int16_t hold_acceleration = 1;
 		// if(value_encoder->readButton()) hold_acceleration = 20;
 
-		dual_display_driver->writeByteCode(0, 0b00000101); // r
-		dual_display_driver->writeByteCode(1, 0b01011011); // S
-		dual_display_driver->writeByteCode(2, 0b00001111); // t
+		dual_display_driver->writeByteCode(0, __r__); // r
+		dual_display_driver->writeByteCode(1, __S__); // S
+		dual_display_driver->writeByteCode(2, __t__); // t
 		dual_display_driver->writeByteCode(3, 0b00000000); // 
 
 		if(value_encoder->pressed())
@@ -777,17 +870,17 @@ void Engine::settingsMode()
 
 		if(snapshot->rst_input_assignment == RST_ASSIGNMENT_SAMPLE_AND_HOLD)
 		{
-			dual_display_driver->writeByteCode(4, 0b01011011); // S
-			dual_display_driver->writeByteCode(5, 0b00010111); // h
+			dual_display_driver->writeByteCode(4, __S__); // S
+			dual_display_driver->writeByteCode(5, __h__); // h
 			dual_display_driver->writeByteCode(6, 0b00000000); // 
 			dual_display_driver->writeByteCode(7, 0b00000000); //
 		}
 
 		if(snapshot->rst_input_assignment == RST_ASSIGNMENT_RESET)
 		{
-			dual_display_driver->writeByteCode(4, 0b00000101); // r
-			dual_display_driver->writeByteCode(5, 0b01011011); // S
-			dual_display_driver->writeByteCode(6, 0b00001111); // t
+			dual_display_driver->writeByteCode(4, __r__); // r
+			dual_display_driver->writeByteCode(5, __S__); // S
+			dual_display_driver->writeByteCode(6, __t__); // t
 			dual_display_driver->writeByteCode(7, 0b00000000); //
 		}
 
