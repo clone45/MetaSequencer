@@ -70,6 +70,8 @@ void Snapshot::init()
   // Load reset input assignment
   this->rst_input_assignment = memory->read(MEM_RST_INPUT_ASSIGNMENT);
 
+  // Load press functionality
+  this->press_functionality = memory->read(MEM_PRESS_FUNCTIONALITY);
 }
 
 
@@ -264,5 +266,18 @@ void Snapshot::setRstInputAssignment(uint8_t rst_input_assignment)
   {
     this->rst_input_assignment = rst_input_assignment;
     memory->write(MEM_RST_INPUT_ASSIGNMENT, rst_input_assignment);
+  }
+}
+
+//
+// press functionality (course/fine)
+//
+
+void Snapshot::setPressFunctionality(uint8_t press_functionality)
+{
+  if(press_functionality != this->press_functionality)
+  {
+    this->press_functionality = press_functionality;
+    memory->write(MEM_PRESS_FUNCTIONALITY, press_functionality);
   }
 }

@@ -25,11 +25,8 @@ Parts:
   DAC: MCP4725 - http://www.adafruit.com/datasheets/mcp4725.pdf
   LED Driver: AS1115 - http://www.ams.com/eng/content/download/18430/343782
 
-TODO:  
-  - randomize sequence on factory reset
-  - get rid of sequencer object?
-  - test manual stepping
-  - remove old -hold- variable
+Upcoming feature ideas / requests:  
+  - allow reversing of the course/fine modes via a menu settings
 
 Bugs
   - 

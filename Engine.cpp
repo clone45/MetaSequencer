@@ -345,7 +345,20 @@ void Engine::sequenceEditMode()
 	int16_t value_acceleration = 1;
 
 	if(step_encoder->readButton() && (snapshot->sequence_length > 16)) step_acceleration = 10;
-	if(value_encoder_button_pressed) value_acceleration = 100;
+
+	if(snapshot->press_functionality == PRESS_ASSIGNMENT_FINE) value_acceleration = 100;
+	
+	if(value_encoder_button_pressed)
+	{
+		if(snapshot->press_functionality == PRESS_ASSIGNMENT_FINE)
+		{
+			value_acceleration = 1;
+		}
+		else
+		{
+			value_acceleration = 100;
+		}
+	}
 
 	z_edit_step = (z_edit_step + (step_encoder->read() * step_acceleration));
 
@@ -884,10 +897,44 @@ void Engine::settingsMode()
 			dual_display_driver->writeByteCode(7, 0b00000000); //
 		}
 
-		// Set in snapshot
-		
 	}
 
+	if(settings_page == 16)
+	{
+		dual_display_driver->writeByteCode(0, __P__);
+		dual_display_driver->writeByteCode(1, __r__);
+		dual_display_driver->writeByteCode(2, __E__);
+		dual_display_driver->writeByteCode(3, __S__);
+
+		if(value_encoder->pressed())
+		{
+			if(snapshot->press_functionality == PRESS_ASSIGNMENT_FINE)
+			{
+				snapshot->setPressFunctionality(PRESS_ASSIGNMENT_COARSE);
+			}
+			else
+			{
+				snapshot->setPressFunctionality(PRESS_ASSIGNMENT_FINE);
+			}
+		}
+
+		if(snapshot->press_functionality == PRESS_ASSIGNMENT_FINE)
+		{
+			dual_display_driver->writeByteCode(4, __F__);
+			dual_display_driver->writeByteCode(5, __i__);
+			dual_display_driver->writeByteCode(6, __n__);
+			dual_display_driver->writeByteCode(7, __E__);
+		}
+
+		if(snapshot->press_functionality == PRESS_ASSIGNMENT_COARSE)
+		{
+			dual_display_driver->writeByteCode(4, __c__);
+			dual_display_driver->writeByteCode(5, __o__);
+			dual_display_driver->writeByteCode(6, __r__);
+			dual_display_driver->writeByteCode(7, __S__);
+		}
+
+	}
 
 	// Select settings page using the clock button
 	// Go back a page using the reset button
@@ -922,6 +969,7 @@ void Engine::factoryReset()
 	snapshot->setSong2(0);
 	snapshot->setDisplayIntensity(15);
 	snapshot->setRstInputAssignment(RST_ASSIGNMENT_RESET);
+	snapshot->setPressFunctionality(PRESS_ASSIGNMENT_FINE);
 
 	for(uint8_t i=0; i<MAX_SEQUENCE_LENGTH; i++)
 	{
